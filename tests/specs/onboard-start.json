@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Onboard Account",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Begin linking Telegram account and authorizing channels"
+            }
+          }
+        ],
+        "send": {
+          "callback": "onboard:start"
+        }
+      }
+    ]
+  }
+]
