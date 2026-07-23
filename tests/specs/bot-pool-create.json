@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Create Bot Pool",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Request X bots for a channel or let system decide"
+            }
+          }
+        ],
+        "send": {
+          "callback": "bot_pool:create"
+        }
+      }
+    ]
+  }
+]
