@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Configure Reaction Rule",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Set target, timing, and message templates for reactions"
+            }
+          }
+        ],
+        "send": {
+          "callback": "reaction_rule:configure"
+        }
+      }
+    ]
+  }
+]
