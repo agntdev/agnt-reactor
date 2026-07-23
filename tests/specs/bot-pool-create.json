@@ -1,19 +1,128 @@
 [
   {
-    "name": "Create Bot Pool",
+    "name": "Create Bot Pool requires onboarding",
     "steps": [
       {
+        "send": { "callback": "bot_pool:create" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Request X bots for a channel or let system decide"
+              "text": "Connect your account first — open Onboard account from the menu."
             }
           }
-        ],
-        "send": {
-          "callback": "bot_pool:create"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Create Bot Pool after channel link",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:link_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "@pool_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:set_subs" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "5000" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "bot_pool:create" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Channel: @pool_channel\nSubscribers: 5,000\nFree-tier slots left: 10 (max 10)\n\nHow many bots? Suggested: 2. Send a number, or tap Auto."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "3" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Created 3 bot(s) for this channel.\n\n• Reactor 01 — needs token\n• Reactor 02 — needs token\n• Reactor 03 — needs token\nRemaining free-tier slots: 7\nAdd each bot to the channel as admin. We never auto-create Telegram accounts — tokens come from BotFather or BOT_TOKEN_POOL.\n3 bot(s) need a token — open Manage pool to paste them."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Free tier rejects more than remaining quota",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:link_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "@quota_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:set_subs" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "1000" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "bot_pool:create" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "10" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "bot_pool:create" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Free tier supports up to 10 bots and you're at the limit. Pause or remove bots under Manage pool, or upgrade your plan."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Manage pool empty without pools",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "bot_pool:manage" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "No pools yet — create a bot pool after onboarding a channel."
+            }
+          }
+        ]
       }
     ]
   }

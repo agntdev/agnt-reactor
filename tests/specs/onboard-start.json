@@ -1,19 +1,94 @@
 [
   {
-    "name": "Onboard Account",
+    "name": "Onboard Account intro",
     "steps": [
       {
+        "send": { "callback": "onboard:start" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Begin linking Telegram account and authorizing channels"
+              "text": "We'll connect your Telegram account as the owner, then you'll authorize a channel.\n\nSubscriber counts stay private — never shared or sold."
             }
           }
-        ],
-        "send": {
-          "callback": "onboard:start"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Onboard connect then link channel pending",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "You're connected as the owner. Next, authorize a channel.\n\nAdd this bot as an admin (post messages), then send the channel @username or numeric id."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "onboard:link_channel" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send the channel @username or id (example: @mychannel).\n\nYou must already be able to add bots as admin there."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "@demo_channel" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Saved @demo_channel as pending.\n\nCouldn't verify admin access yet. Add this bot as a channel admin with post rights, then tap Verify — or set the subscriber count manually."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Onboard set subscriber count for 10k channel",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:link_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "@big_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:set_subs" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send the current subscriber count as a number (e.g. 10000). Used for the 20% reaction target."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "10000" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Updated @big_channel to 10,000 subscribers.\nAt 20% target that's 2,000 reactions per job."
+            }
+          }
+        ]
       }
     ]
   }

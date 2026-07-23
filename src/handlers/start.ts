@@ -2,23 +2,45 @@ import { Composer } from "grammy";
 import type { Ctx } from "../bot.js";
 import { mainMenuKeyboard } from "../toolkit/index.js";
 
-// The /start handler renders the bot's MAIN MENU — the primary way users operate
-// a button-first bot. A feature adds its own button by calling
-// `registerMainMenuItem(...)` in its own `src/handlers/<slug>.ts`; this handler
-// renders whatever is registered (plus a Help button), so you do NOT edit this
-// file to add a feature. Send ONE message — no placeholder line above the menu.
 const composer = new Composer<Ctx>();
 
-const WELCOME = "👋 Welcome! Tap a button below to get started.";
+const WELCOME =
+  "Reaction Manager — keep channel engagement on target.\n\n" +
+  "Tap a button below to onboard, build a bot pool, set rules, or monitor jobs.";
 
 composer.command("start", async (ctx) => {
+  ctx.session.step = "idle";
   await ctx.reply(WELCOME, { reply_markup: mainMenuKeyboard() });
 });
 
-// "Back to menu" — re-render the main menu in place from any sub-view.
 composer.callbackQuery("menu:main", async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.editMessageText(WELCOME, { reply_markup: mainMenuKeyboard() });
+  ctx.session.step = "idle";
+  try {
+    await ctx.editMessageText(WELCOME, { reply_markup: mainMenuKeyboard() });
+  } catch {
+    await ctx.reply(WELCOME, { reply_markup: mainMenuKeyboard() });
+  }
+});
+
+composer.callbackQuery("flow:cancel", async (ctx) => {
+  await ctx.answerCallbackQuery();
+  ctx.session.step = "idle";
+  ctx.session.draftChannelId = undefined;
+  ctx.session.draftBotCount = undefined;
+  ctx.session.draftBotId = undefined;
+  ctx.session.draftTargetPct = undefined;
+  ctx.session.draftSpreadMin = undefined;
+  ctx.session.draftTemplates = undefined;
+  try {
+    await ctx.editMessageText("Cancelled. Tap a menu button when you're ready.", {
+      reply_markup: mainMenuKeyboard(),
+    });
+  } catch {
+    await ctx.reply("Cancelled. Tap a menu button when you're ready.", {
+      reply_markup: mainMenuKeyboard(),
+    });
+  }
 });
 
 export default composer;

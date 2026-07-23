@@ -5,8 +5,37 @@ import type { StorageAdapter } from "grammy";
 // The per-chat session shape (ephemeral conversation state only). Extend as the
 // bot grows. Durable domain data must NOT live here — use the toolkit's
 // persistent storage (see AGENTS.md).
+export type FlowStep =
+  | "idle"
+  | "onboard_await_channel"
+  | "onboard_await_email"
+  | "pool_await_channel"
+  | "pool_await_count"
+  | "pool_await_token"
+  | "rule_await_channel"
+  | "rule_await_target"
+  | "rule_await_timing"
+  | "rule_await_templates"
+  | "monitor_await_channel_filter";
+
 export interface Session {
-  // example: step?: "awaiting_amount";
+  step?: FlowStep;
+  /** Draft channel id/username while flowing. */
+  draftChannelId?: string;
+  /** Draft bot count for pool creation. */
+  draftBotCount?: number;
+  /** Bot id waiting for a token paste. */
+  draftBotId?: string;
+  /** Draft reaction target percentage. */
+  draftTargetPct?: number;
+  /** Draft spread minutes. */
+  draftSpreadMin?: number;
+  /** Draft templates (joined). */
+  draftTemplates?: string;
+  /** Monitor filter: channel id or empty = all. */
+  filterChannelId?: string;
+  /** Monitor filter: "24h" | "7d" | "all". */
+  filterRange?: "24h" | "7d" | "all";
 }
 
 export type Ctx = BotContext<Session>;
@@ -43,8 +72,14 @@ export interface BuildBotOptions {
  * build-time manifest because Workers has no filesystem.
  */
 export async function buildBot(token: string, opts: BuildBotOptions = {}) {
+  // Isolate durable memory-backend between harness specs (no REDIS_URL).
+  if (typeof process !== "undefined" && !process.env.REDIS_URL) {
+    const { resetDurableStore } = await import("./lib/store.js");
+    resetDurableStore();
+  }
+
   const bot = createBot<Session>(token, {
-    initial: () => ({}),
+    initial: (): Session => ({ step: "idle" }),
     storage: opts.storage,
     telemetryEnv: opts.telemetryEnv,
     telemetryReporterOptions: opts.telemetryReporterOptions,

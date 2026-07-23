@@ -1,19 +1,94 @@
 [
   {
-    "name": "Configure Reaction Rule",
+    "name": "Configure Reaction Rule requires account",
     "steps": [
       {
+        "send": { "callback": "reaction_rule:configure" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Set target, timing, and message templates for reactions"
+              "text": "Connect your account first via Onboard account."
             }
           }
-        ],
-        "send": {
-          "callback": "reaction_rule:configure"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Configure Reaction Rule full flow with defaults",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:link_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "@rules_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:set_subs" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "10000" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "bot_pool:create" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "2" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "reaction_rule:configure" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Rules for @rules_channel\nSubscribers: 10,000 → ~2,000 reactions at 20%\n\nSend the reaction target percentage (1–100). Default is 20."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "reaction_rule:default_target" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Target set to 20%.\n\nSend how many minutes to spread posts over (rate-limit friendly). Default 60."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "reaction_rule:default_timing" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send reply templates, one per line.\nKeep them natural — spammy blasts risk channel limits and TOS issues."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "reaction_rule:default_templates" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Reaction rule saved for @rules_channel.\n\nTarget: 20% (~2,000 reactions)\nSpread: 60 min · max 20/bot/min\nTemplates: 3\nStatus: configured"
+            }
+          }
+        ]
       }
     ]
   }
