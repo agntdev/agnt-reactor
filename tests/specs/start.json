@@ -7,7 +7,25 @@
         "expect": [
           {
             "method": "sendMessage",
-            "payload": { "text": "👋 Welcome! Tap a button below to get started." }
+            "payload": {
+              "text": "Reaction Manager — keep channel engagement on target.\n\nTap a button below to onboard, build a bot pool, set rules, or monitor jobs."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "main menu back button re-renders welcome",
+    "steps": [
+      {
+        "send": { "callback": "menu:main" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Reaction Manager — keep channel engagement on target.\n\nTap a button below to onboard, build a bot pool, set rules, or monitor jobs."
+            }
           }
         ]
       }

@@ -1,19 +1,89 @@
 [
   {
-    "name": "Monitor Jobs",
+    "name": "Monitor Jobs requires account",
     "steps": [
       {
+        "send": { "callback": "monitor:jobs" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View status of recent jobs and bot pool activity"
+              "text": "Connect your account first via Onboard account."
             }
           }
-        ],
-        "send": {
-          "callback": "monitor:jobs"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Monitor Jobs empty state",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "monitor:jobs" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "No jobs match these filters yet — configure a reaction rule to create one."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Monitor Jobs shows configured job",
+    "steps": [
+      {
+        "send": { "callback": "onboard:connect" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:link_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "@mon_channel" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "onboard:set_subs" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "text": "1000" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "reaction_rule:configure" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "reaction_rule:default_target" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "reaction_rule:default_timing" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "reaction_rule:default_templates" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "monitor:jobs" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Job status (all channels, any time)\n\n• @mon_channel\n  configured · 20% · posts 0\n  updated just now"
+            }
+          }
+        ]
       }
     ]
   }
